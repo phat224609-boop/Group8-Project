@@ -1,25 +1,26 @@
-// Đây là file app.js (file server chính)
-
-// 1. Import các thư viện cần thiết
 const express = require('express');
-const app = express(); // Tạo một ứng dụng express
+const dotenv = require('dotenv');
+const cors = require('cors');
+// --- BƯỚC 1: IMPORT USER ROUTE ---
+const userRoutes = require('./routes/user.js');
 
-// 2. Import router của bạn
-const userRouter = require('./routes/user');
+dotenv.config();
 
-// 3. MIDDLEWARE: Rất quan trọng
-// Dòng này giúp server đọc được JSON từ body của request (cho POST)
+const app = express();
+app.use(cors());
 app.use(express.json());
 
-// 4. ROUTING:
-// Báo cho server biết: 
-// Bất kỳ request nào có đường dẫn bắt đầu bằng '/api/v1/users'
-// thì sẽ được xử lý bởi 'userRouter' (file routes/user.js của bạn)
-app.use('/api/v1/users', userRouter);
+const PORT = process.env.PORT || 3000;
 
-// 5. KHỞI ĐỘNG SERVER
-const port = 3000;
-app.listen(port, () => {
-    console.log(`Ứng dụng đang chạy trên cổng ${port}...`);
-    console.log('Bây giờ bạn có thể mở Postman để test!');
+// Route cơ bản để kiểm tra
+app.get('/', (req, res) => {
+  res.send('Backend server dang chay!');
+});
+
+// --- BƯỚC 2: SỬ DỤNG USER ROUTE ---
+// Bất kỳ request nào bắt đầu bằng /users sẽ được chuyển đến userRoutes
+app.use('/users', userRoutes);
+
+app.listen(PORT, () => {
+  console.log(`Server dang chay tai http://localhost:${PORT}`);
 });
