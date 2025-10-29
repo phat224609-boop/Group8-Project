@@ -1,3 +1,8 @@
+
+
+/* --- File: backend/server.js --- */
+
+ 
 // --- 1. IMPORT CAC THU VIEN ---
 const express = require('express');
 const dotenv = require('dotenv');
@@ -52,6 +57,4 @@ mongoose
     process.exit(1); // Thoat app neu khong ket noi duoc DB
   });
 
-/* LUU Y: Khong con lenh app.listen() o duoi cung nua,
-  vi chung ta da chuyen no vao ben trong .then() o tren.
-*/
+
