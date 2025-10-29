@@ -1,3 +1,4 @@
+
 // --- 1. IMPORT CAC THU VIEN ---
 const express = require('express');
 const dotenv = require('dotenv');
@@ -53,5 +54,4 @@ mongoose
   });
 
 /* LUU Y: Khong con lenh app.listen() o duoi cung nua,
-  vi chung ta da chuyen no vao ben trong .then() o tren.
-*/
+  vi chung ta da chuyen no vao ben trong .then() o tren. */
