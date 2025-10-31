@@ -1,15 +1,14 @@
-// controllers/userController.js
+/* --- File: backend/controllers/userController.js --- */
 
-// Mảng tạm thời để lưu trữ users (Fake Database)
-let users = [
-  { id: 1, name: 'Phat (Backend)', email: 'phat@example.com' },
-  { id: 2, name: 'Thu (Frontend)', email: 'thu@example.com' },
-  { id: 3, name: 'Vi (Database)', email: 'vi@example.com' },
-];
+// Import model User (Vi đã tạo ở models/User.js)
+const User = require('../models/user');
 
-// Logic 1: Lấy tất cả users (GET /users)
-const getAllUsers = (req, res) => {
+// --- 1. Cập nhật GET /users (dùng async/await) ---
+const getAllUsers = async (req, res) => {
   try {
+    // Dùng 'User.find()' để lấy tất cả user từ MongoDB
+    const users = await User.find();
+
     res.status(200).json({
       message: 'Lay danh sach users thanh cong!',
       data: users,
@@ -19,23 +18,22 @@ const getAllUsers = (req, res) => {
   }
 };
 
-// Logic 2: Tạo user mới (POST /users)
-const createUser = (req, res) => {
+// --- 2. Cập nhật POST /users (dùng async/await) ---
+const createUser = async (req, res) => {
   try {
-    // Lấy data từ body
     const { name, email } = req.body;
 
-    // (Thường thì database sẽ tự tạo ID, ở đây chúng ta fake)
-    const newId = users.length > 0 ? users[users.length - 1].id + 1 : 1;
+    // (Logic cải tiến) Kiểm tra xem email đã tồn tại chưa
+    const existingUser = await User.findOne({ email: email });
+    if (existingUser) {
+      return res.status(400).json({ message: 'Email da ton tai' });
+    }
 
-    const newUser = {
-      id: newId,
+    // Dùng 'User.create()' để tạo một document mới trong MongoDB
+    const newUser = await User.create({
       name: name,
       email: email,
-    };
-
-    // Thêm user mới vào mảng
-    users.push(newUser);
+    });
 
     res.status(201).json({
       message: 'Tao user moi thanh cong!',
@@ -46,7 +44,7 @@ const createUser = (req, res) => {
   }
 };
 
-// Xuất các hàm này ra để file route có thể dùng
+// Xuất các hàm đã cập nhật
 module.exports = {
   getAllUsers,
   createUser,
