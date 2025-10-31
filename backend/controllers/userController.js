@@ -1,35 +1,50 @@
-// backend/controllers/userController.js
+/* --- File: backend/controllers/userController.js --- */
 const User = require('../models/User');
-const { router } = require('../routes/user');
 
-// --- CÁC HÀM CŨ (getAllUsers, createUser) GIỮ NGUYÊN ---
+// --- 1. GET ---
 const getAllUsers = async (req, res) => {
-  // ... (code cũ của Vi, giữ nguyên)
+  try {
+    const users = await User.find();
+    res.status(200).json({
+      message: 'Lay danh sach users thanh cong!',
+      data: users,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
 
+// --- 2. POST ---
 const createUser = async (req, res) => {
-  // ... (code cũ của Vi, giữ nguyên)
+  try {
+    const { name, email } = req.body;
+    const existingUser = await User.findOne({ email: email });
+    if (existingUser) {
+      return res.status(400).json({ message: 'Email da ton tai' });
+    }
+    const newUser = await User.create({ name, email });
+    res.status(201).json({
+      message: 'Tao user moi thanh cong!',
+      data: newUser,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
 
-
-
-// PUT: Sửa user
+// --- 3. PUT ---
 const updateUser = async (req, res) => {
   try {
-    const { id } = req.params; // Lấy id từ URL
-    const { name, email } = req.body; // Lấy thông tin mới từ body
-
-    // Tìm và cập nhật user trong MongoDB
+    const { id } = req.params;
+    const { name, email } = req.body;
     const updatedUser = await User.findByIdAndUpdate(
       id,
-      { name: name, email: email },
-      { new: true } // {new: true} để trả về user sau khi đã cập nhật
+      { name, email },
+      { new: true }
     );
-
     if (!updatedUser) {
       return res.status(404).json({ message: 'User not found' });
     }
-
     res.status(200).json({
       message: 'Cap nhat user thanh cong!',
       data: updatedUser,
@@ -39,18 +54,14 @@ const updateUser = async (req, res) => {
   }
 };
 
-// DELETE: Xóa user
+// --- 4. DELETE ---
 const deleteUser = async (req, res) => {
   try {
-    const { id } = req.params; // Lấy id từ URL
-
-    // Tìm và xóa user trong MongoDB
+    const { id } = req.params;
     const deletedUser = await User.findByIdAndDelete(id);
-
     if (!deletedUser) {
       return res.status(404).json({ message: 'User not found' });
     }
-
     res.status(200).json({
       message: 'Xoa user thanh cong!',
       data: deletedUser,
@@ -60,13 +71,10 @@ const deleteUser = async (req, res) => {
   }
 };
 
-// --- CẬP NHẬT MODULE.EXPORTS ---
-// (Thêm updateUser và deleteUser vào)
+// --- XUẤT RA CẢ 4 HÀM ---
 module.exports = {
   getAllUsers,
   createUser,
   updateUser,
   deleteUser,
 };
-// ------------------------------------
-module.exports = router;
