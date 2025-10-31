@@ -1,5 +1,6 @@
 // backend/controllers/userController.js
-const User = require('../models/user');
+const User = require('../models/User');
+const { router } = require('../routes/user');
 
 // --- CÁC HÀM CŨ (getAllUsers, createUser) GIỮ NGUYÊN ---
 const getAllUsers = async (req, res) => {
@@ -10,7 +11,7 @@ const createUser = async (req, res) => {
   // ... (code cũ của Vi, giữ nguyên)
 };
 
-// --- HOẠT ĐỘNG 7: THÊM 2 HÀM MỚI (DÙNG MONGOOSE) ---
+
 
 // PUT: Sửa user
 const updateUser = async (req, res) => {
@@ -67,3 +68,5 @@ module.exports = {
   updateUser,
   deleteUser,
 };
+// ------------------------------------
+module.exports = router;
