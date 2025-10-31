@@ -1,51 +1,69 @@
-/* --- File: backend/controllers/userController.js --- */
-
-// Import model User (Vi đã tạo ở models/User.js)
+// backend/controllers/userController.js
 const User = require('../models/user');
 
-// --- 1. Cập nhật GET /users (dùng async/await) ---
+// --- CÁC HÀM CŨ (getAllUsers, createUser) GIỮ NGUYÊN ---
 const getAllUsers = async (req, res) => {
-  try {
-    // Dùng 'User.find()' để lấy tất cả user từ MongoDB
-    const users = await User.find();
-
-    res.status(200).json({
-      message: 'Lay danh sach users thanh cong!',
-      data: users,
-    });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
+  // ... (code cũ của Vi, giữ nguyên)
 };
 
-// --- 2. Cập nhật POST /users (dùng async/await) ---
 const createUser = async (req, res) => {
-  try {
-    const { name, email } = req.body;
+  // ... (code cũ của Vi, giữ nguyên)
+};
 
-    // (Logic cải tiến) Kiểm tra xem email đã tồn tại chưa
-    const existingUser = await User.findOne({ email: email });
-    if (existingUser) {
-      return res.status(400).json({ message: 'Email da ton tai' });
+// --- HOẠT ĐỘNG 7: THÊM 2 HÀM MỚI (DÙNG MONGOOSE) ---
+
+// PUT: Sửa user
+const updateUser = async (req, res) => {
+  try {
+    const { id } = req.params; // Lấy id từ URL
+    const { name, email } = req.body; // Lấy thông tin mới từ body
+
+    // Tìm và cập nhật user trong MongoDB
+    const updatedUser = await User.findByIdAndUpdate(
+      id,
+      { name: name, email: email },
+      { new: true } // {new: true} để trả về user sau khi đã cập nhật
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: 'User not found' });
     }
 
-    // Dùng 'User.create()' để tạo một document mới trong MongoDB
-    const newUser = await User.create({
-      name: name,
-      email: email,
-    });
-
-    res.status(201).json({
-      message: 'Tao user moi thanh cong!',
-      data: newUser,
+    res.status(200).json({
+      message: 'Cap nhat user thanh cong!',
+      data: updatedUser,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// Xuất các hàm đã cập nhật
+// DELETE: Xóa user
+const deleteUser = async (req, res) => {
+  try {
+    const { id } = req.params; // Lấy id từ URL
+
+    // Tìm và xóa user trong MongoDB
+    const deletedUser = await User.findByIdAndDelete(id);
+
+    if (!deletedUser) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.status(200).json({
+      message: 'Xoa user thanh cong!',
+      data: deletedUser,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// --- CẬP NHẬT MODULE.EXPORTS ---
+// (Thêm updateUser và deleteUser vào)
 module.exports = {
   getAllUsers,
   createUser,
+  updateUser,
+  deleteUser,
 };
