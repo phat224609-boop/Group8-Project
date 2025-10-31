@@ -1,6 +1,6 @@
 import React from 'react';
 
-// Component này chỉ nhận props 'users' và hiển thị
+// Component này chỉ nhận props 'users' và hiển thị..
 function UserList({ users }) {
     return (
         <div style={{ marginTop: '20px', width: '300px' }}>
