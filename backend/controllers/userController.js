@@ -1,12 +1,13 @@
-/* --- File: backend/controllers/userController.js --- */
+// controllers/userController.js
+const User = require('../models/User'); // Import model
 
-// Import model User (Vi đã tạo ở models/User.js)
-const User = require('../models/user');
+// Mảng tạm thời (Fake Database) đã BỊ XÓA
 
-// --- 1. Cập nhật GET /users (dùng async/await) ---
+// Logic 1: Lấy tất cả users (GET /users)
+// Chuyển thành hàm async
 const getAllUsers = async (req, res) => {
   try {
-    // Dùng 'User.find()' để lấy tất cả user từ MongoDB
+    // Dùng User.find() để lấy tất cả user từ MongoDB
     const users = await User.find();
 
     res.status(200).json({
@@ -18,18 +19,20 @@ const getAllUsers = async (req, res) => {
   }
 };
 
-// --- 2. Cập nhật POST /users (dùng async/await) ---
+// Logic 2: Tạo user mới (POST /users)
+// Chuyển thành hàm async
+
 const createUser = async (req, res) => {
   try {
     const { name, email } = req.body;
 
-    // (Logic cải tiến) Kiểm tra xem email đã tồn tại chưa
+    // Kiểm tra email đã tồn tại chưa
     const existingUser = await User.findOne({ email: email });
     if (existingUser) {
       return res.status(400).json({ message: 'Email da ton tai' });
     }
 
-    // Dùng 'User.create()' để tạo một document mới trong MongoDB
+    // Dùng User.create() để tạo user mới trong MongoDB
     const newUser = await User.create({
       name: name,
       email: email,
@@ -44,7 +47,6 @@ const createUser = async (req, res) => {
   }
 };
 
-// Xuất các hàm đã cập nhật
 module.exports = {
   getAllUsers,
   createUser,
