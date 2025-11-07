@@ -1,19 +1,8 @@
 
-
-/* --- File: backend/server.js --- */
-
- 
 // --- 1. IMPORT CAC THU VIEN ---
 const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
-
-const mongoose = require('mongoose'); // Thu vien ket noi MongoDB
-
-// Import file route
-const userRoutes = require('./routes/user.js');
-
-
 const mongoose = require('mongoose'); // <-- 1. IMPORT MONGOOSE
 const userRoutes = require('./routes/user.js');
 
@@ -23,9 +12,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-
 // --- 2. CAU HINH APP ---
 // Lenh nay phai o tren cung de doc file .env
+
 
 // Middleware
 // (cors and json middleware already applied above)
@@ -34,11 +23,9 @@ app.use(express.json());
 const PORT = process.env.PORT || 3000;
 
 
-
 // <-- 2. KET NOI MONGODB -->
 // Lấy chuỗi kết nối từ file .env
 const MONGO_URI = process.env.MONGO_URI;
-
 
 
 // --- 3. DINH NGHIA ROUTES ---
@@ -67,4 +54,5 @@ mongoose
     process.exit(1); // Thoat app neu khong ket noi duoc DB
   });
 
-
+/* LUU Y: Khong con lenh app.listen() o duoi cung nua,
+  vi chung ta da chuyen no vao ben trong .then() o tren. */
