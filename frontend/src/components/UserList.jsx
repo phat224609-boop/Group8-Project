@@ -1,26 +1,40 @@
+// src/components/UserList.jsx
 import React from 'react';
 
-// Component này chỉ nhận props 'users' và hiển thị..
-function UserList({ users }) {
-    return (
-        <div style={{ marginTop: '20px', width: '300px' }}>
-            <h2>Danh sách User</h2>
-            {users.length === 0 ? (
-                <p>Chưa có user nào.</p>
-            ) : (
-                <ul style={{ listStyle: 'none', padding: 0, textAlign: 'left' }}>
-                    {/* Dùng .map() để lặp qua mảng users */}
-                    {users.map(user => (
-                        <li key={user.id || user.email} style={{ background: '#444', padding: '10px', margin: '5px', borderRadius: '5px' }}>
-                            <strong>{user.name}</strong>
-                            <br />
-                            <small>{user.email}</small>
-                        </li>
-                    ))}
-                </ul>
-            )}
-        </div>
-    );
+// Nhận 2 prop mới: handleEdit và handleDelete
+function UserList({ users, handleEdit, handleDelete }) {
+  return (
+    <div>
+      <h3>Danh Sach Users</h3>
+      <ul style={{ listStyle: 'none', padding: 0 }}>
+        {users.length === 0 ? (
+          <p>Chua co user nao...</p>
+        ) : (
+          users.map(user => (
+            // Lưu ý: Key phải là user._id (từ MongoDB)
+            <li key={user._id} style={{ margin: '10px' }}>
+              <strong>{user.name}</strong> ({user.email})
+              
+              {/* --- ĐÂY LÀ 2 NÚT BỊ MẤT --- */}
+              <button 
+                onClick={() => handleEdit(user)} 
+                style={{ marginLeft: '10px' }}>
+                Sửa
+              </button>
+              
+              <button 
+                onClick={() => handleDelete(user._id)} 
+                style={{ marginLeft: '5px' }}>
+                Xóa
+              </button>
+              {/* ------------------------------- */}
+
+            </li>
+          ))
+        )}
+      </ul>
+    </div>
+  );
 }
 
 export default UserList;
