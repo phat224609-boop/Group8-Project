@@ -4,12 +4,28 @@ const router = express.Router();
 const {
   getUserProfile,
   updateUserProfile,
+  uploadAvatar, // <-- Import hàm mới
 } = require('../controllers/userController');
-const { protect } = require('../middleware/authMiddleware'); // <-- Import middleware
+const { protect } = require('../middleware/authMiddleware');
+const upload = require('../config/cloudinary'); // <-- Import middleware Upload
 
-// Định nghĩa 2 route mới
-// Khi gọi GET / , hàm 'protect' sẽ chạy trước, sau đó mới đến 'getUserProfile'
+// GET /api/profile
 router.get('/', protect, getUserProfile);
+
+// PUT /api/profile
 router.put('/', protect, updateUserProfile);
+
+// --- HOẠT ĐỘNG MỚI ---
+// PUT /api/profile/upload-avatar
+// Middleware 'protect' chạy trước (xác thực user)
+// Middleware 'upload.single('avatar')' chạy kế (xử lý file)
+// Cuối cùng mới đến hàm 'uploadAvatar'
+router.put(
+  '/upload-avatar', 
+  protect, 
+  upload.single('avatar'), // 'avatar' là tên trường (field)
+  uploadAvatar
+);
+// --------------------
 
 module.exports = router;
