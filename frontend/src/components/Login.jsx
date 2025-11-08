@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-// Dùng IP của Phat
 const API_URL = 'http://192.168.1.11:3000/api/auth/login';
 
 function Login() {
@@ -17,17 +16,20 @@ function Login() {
     try {
       const response = await axios.post(API_URL, { email, password });
       
-      // --- LƯU TOKEN ---
+      // --- LƯU TOKEN VÀ ROLE (HOẠT ĐỘNG 3) ---
       const token = response.data.token;
+      const userRole = response.data.data.role; // Lấy role từ API
+
       localStorage.setItem('token', token);
+      localStorage.setItem('userRole', userRole); // Lưu role
+      // ----------------------------------------
       
-      // (Nâng cao) Tự động đính kèm token vào mọi request axios sau này
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       
-      setMessage(`Dang nhap thanh cong! Token: ${token}`);
+      setMessage(`Dang nhap thanh cong! Role: ${userRole}`);
       
-      // Tùy chọn: Chuyển hướng đến trang chính
-      // window.location.href = '/'; 
+      // Tải lại trang để App.js đọc role mới và hiển thị trang Admin
+      window.location.reload(); 
       
     } catch (error) {
       if (error.response && (error.response.status === 400 || error.response.status === 404)) {
@@ -52,7 +54,6 @@ function Login() {
       </div>
       <button type="submit" style={{ marginTop: '10px' }}>Dang Nhap</button>
       
-      {/* Hiển thị thông báo (bao gồm cả token) */}
       {message && <p style={{ wordBreak: 'break-all' }}>{message}</p>}
     </form>
   );
