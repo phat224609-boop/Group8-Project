@@ -5,6 +5,8 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const mongoose = require('mongoose'); // <-- 1. IMPORT MONGOOSE
 const userRoutes = require('./routes/user.js');
+const authRoutes = require('./routes/auth.js');
+const profileRoutes = require('./routes/profile.js');
 
 dotenv.config(); // Dòng này sẽ đọc file .env
 const app = express();
@@ -36,6 +38,8 @@ app.get('/', (req, res) => {
 
 // Route cho Users
 app.use('/users', userRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/profile', profileRoutes);
 
 // --- 4. KET NOI DATABASE & KHOI DONG SERVER ---
 mongoose
