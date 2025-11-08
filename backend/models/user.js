@@ -1,5 +1,6 @@
 // backend/models/User.js
 const mongoose = require('mongoose');
+const crypto = require('crypto'); // Thư viện (có sẵn) để tạo token
 
 const UserSchema = new mongoose.Schema(
   {
@@ -10,22 +11,38 @@ const UserSchema = new mongoose.Schema(
     email: {
       type: String,
       required: true,
-      unique: true, // Email không được trùng
+      unique: true,
     },
-    // --- HOẠT ĐỘNG MỚI ---
     password: {
       type: String,
-      required: true, // Bắt buộc phải có mật khẩu
-      minlength: 6, // Mật khẩu ít nhất 6 ký tự
+      required: true,
+      minlength: 6,
     },
     role: {
       type: String,
-      enum: ['user', 'admin'], // Chỉ được là 'user' hoặc 'admin'
-      default: 'user', // Mặc định là 'user'
+      enum: ['user', 'admin'],
+      default: 'user',
     },
-    // --------------------
+    avatar: {
+      type: String,
+      default: 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'
+    },
+    resetPasswordToken: String, // Lưu token reset
+    resetPasswordExpire: Date, // Thời gian token hết hạn
   },
   { timestamps: true }
 );
+
+// --- HÀM MỚI (Tạo token reset) ---
+UserSchema.methods.getResetPasswordToken = function () {
+  const resetToken = crypto.randomBytes(20).toString('hex');
+  this.resetPasswordToken = crypto
+    .createHash('sha256')
+    .update(resetToken)
+    .digest('hex');
+  this.resetPasswordExpire = Date.now() + 10 * 60 * 1000;
+  return resetToken;
+};
+// ---------------------------------
 
 module.exports = mongoose.model('User', UserSchema);
