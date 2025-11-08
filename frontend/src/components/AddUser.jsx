@@ -4,7 +4,7 @@ import axios from 'axios';
 
 // --- QUAN TRỌNG: DÙNG IP CỦA PHAT (BACKEND) ---
 // Đảm bảo IP này chính xác
-const API_URL = 'http://192.168.1.12:3000/users'; 
+const API_URL = 'http://192.168.1.11:3000/users'; 
 
 function AddUser({ onUserAdded }) {
   const [name, setName] = useState('');
