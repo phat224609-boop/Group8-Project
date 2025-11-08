@@ -2,9 +2,11 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-const API_URL = 'http://192.168.1.11:3000/api/auth/login';
+// Dùng IP của Phat (Đảm bảo IP này đúng)
+const API_URL = 'http://192.168.1.11:3000/api/auth/login'; 
 
-function Login() {
+// NHẬN PROP MỚI: onLoginSuccess
+function Login({ onLoginSuccess }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
@@ -16,26 +18,38 @@ function Login() {
     try {
       const response = await axios.post(API_URL, { email, password });
       
-      // --- LƯU TOKEN VÀ ROLE (HOẠT ĐỘNG 3) ---
       const token = response.data.token;
-      const userRole = response.data.data.role; // Lấy role từ API
+      
+      // --- SỬA LỖI CASE SENSITIVE (CHỮ HOA/THƯỜNG) ---
+      
+      // 1. Lấy role gốc từ backend
+      const rawRole = response.data.data.role; 
 
+      if (!rawRole) {
+        setMessage('Lỗi: Backend không trả về userRole!');
+        return;
+      }
+      
+      // 2. CHUẨN HÓA VỀ CHỮ THƯỜNG
+      const finalRole = rawRole.toLowerCase(); 
+      // (Dù Phat/Vi trả về "Admin" hay "admin", nó đều trở thành "admin")
+      
+      // 3. Lưu (đã chuẩn hóa) vào localStorage
       localStorage.setItem('token', token);
-      localStorage.setItem('userRole', userRole); // Lưu role
-      // ----------------------------------------
+      localStorage.setItem('userRole', finalRole);
       
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      // 4. Báo cho App.js (đã chuẩn hóa)
+      onLoginSuccess(finalRole);
       
-      setMessage(`Dang nhap thanh cong! Role: ${userRole}`);
+      // ---------------------------------------------
       
-      // Tải lại trang để App.js đọc role mới và hiển thị trang Admin
-      window.location.reload(); 
+      setMessage(`Dang nhap thanh cong! Role: ${finalRole}`);
       
     } catch (error) {
       if (error.response && (error.response.status === 400 || error.response.status === 404)) {
         setMessage('Email hoac mat khau khong chinh xac!');
       } else {
-        setMessage('Da co loi xay ra, vui long thu lai.');
+        setMessage('Loi ket noi! (Backend co the da sap)');
       }
       console.error('Loi khi dang nhap!', error);
     }
@@ -54,7 +68,7 @@ function Login() {
       </div>
       <button type="submit" style={{ marginTop: '10px' }}>Dang Nhap</button>
       
-      {message && <p style={{ wordBreak: 'break-all' }}>{message}</p>}
+      {message && <p style={{ color: 'red', wordBreak: 'break-all' }}>{message}</p>}
     </form>
   );
 }
