@@ -1,9 +1,11 @@
+
 // src/App.js
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import UserList from './components/UserList';
 import Signup from './components/Signup'; // <-- IMPORT MỚI
 import Login from './components/Login';   // <-- IMPORT MỚI
+import Profile from './components/Profile';
 import './App.css';
 
 // --- DÙNG IP CỦA PHAT ---
@@ -82,6 +84,7 @@ function App() {
         </div>
         
         <hr style={{width: '90%', margin: '20px 0'}}/>
+        <Profile />
 
         {/* --- KHU VỰC CŨ (QUẢN LÝ USER) --- */}
         <UserList
