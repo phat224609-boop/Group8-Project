@@ -2,18 +2,20 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import UserList from './components/UserList';
-import AddUser from './components/AddUser';
+import Signup from './components/Signup'; // <-- IMPORT MỚI
+import Login from './components/Login';   // <-- IMPORT MỚI
 import './App.css';
 
-// --- QUAN TRỌNG: DÙNG IP CỦA PHAT ---
-const API_URL = 'http://192.168.1.12:3000/users';
+// --- DÙNG IP CỦA PHAT ---
+const API_URL_USERS = 'http://192.168.1.11:3000/users';
+const API_URL_AUTH = 'http://192.168.1.11:3000/api/auth';
 
 function App() {
   const [users, setUsers] = useState([]);
 
-  // Hàm load user (giữ nguyên)
+  // --- LOGIC CŨ (GET, PUT, DELETE) ---
   const fetchUsers = () => {
-    axios.get(API_URL) // <-- Đã sửa IP
+    axios.get(API_URL_USERS)
       .then(response => {
         setUsers(response.data.data);
       })
@@ -26,13 +28,10 @@ function App() {
     fetchUsers();
   }, []);
 
-  // --- HOẠT ĐỘNG 7: THÊM LOGIC DELETE ---
   const handleDelete = async (id) => {
-    // Hỏi xác nhận
     if (window.confirm('Ban co chac chan muon xoa?')) {
       try {
-        await axios.delete(`${API_URL}/${id}`); // <-- Đã sửa IP
-        // Sau khi xóa thành công, gọi fetchUsers để load lại list
+        await axios.delete(`${API_URL_USERS}/${id}`);
         fetchUsers();
       } catch (error) {
         console.error('Loi khi xoa user!', error);
@@ -40,18 +39,14 @@ function App() {
     }
   };
 
-  // --- HOẠT ĐỘNG 7: THÊM LOGIC EDIT ---
   const handleEdit = async (user) => {
     const newName = prompt('Nhap ten moi cho user:', user.name);
-
     if (newName && newName !== user.name) {
       try {
-        // Gửi request PUT (chỉ cập nhật tên)
-        await axios.put(`${API_URL}/${user._id}`, { // <-- Đã sửa IP
+        await axios.put(`${API_URL_USERS}/${user._id}`, {
           name: newName,
-          email: user.email // Giữ email cũ
+          email: user.email
         });
-        // Load lại danh sách
         fetchUsers();
       } catch (error) {
         console.error('Loi khi cap nhat user!', error);
@@ -59,17 +54,36 @@ function App() {
     }
   };
 
+  // --- LOGIC MỚI (LOGOUT) ---
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    delete axios.defaults.headers.common['Authorization'];
+    axios.post(`${API_URL_AUTH}/logout`); // Gọi API Logout
+    alert('Da dang xuat!');
+    window.location.reload();
+  };
 
   return (
     <div className="App">
       <header className="App-header">
         <h1>Du an Group8 - (Frontend React)</h1>
-        
-        {/* Component Them User (Hoạt động 8) */}
-        <AddUser onUserAdded={fetchUsers} />
 
-        {/* Component Danh Sach User (Hoạt động 7) */}
-        {/* Truyền 2 hàm mới xuống UserList */}
+        {/* --- NÚT LOGOUT MỚI --- */}
+        <button 
+          onClick={handleLogout} 
+          style={{backgroundColor: 'red', color: 'white', position: 'absolute', top: '10px', right: '10px', padding: '5px 10px'}}>
+          Dang Xuat (Logout)
+        </button>
+
+        {/* --- FORM MỚI (SIGNUP/LOGIN) --- */}
+        <div style={{display: 'flex', justifyContent: 'space-around', width: '90%', gap: '20px'}}>
+          <Signup />
+          <Login />
+        </div>
+        
+        <hr style={{width: '90%', margin: '20px 0'}}/>
+
+        {/* --- KHU VỰC CŨ (QUẢN LÝ USER) --- */}
         <UserList
           users={users}
           handleDelete={handleDelete}
