@@ -1,5 +1,5 @@
 // src/App.js
-import React, { useState, useEffect } from 'react'; // <-- THÊM LẠI useState
+import React, { useState } from 'react'; // <-- THÊM LẠI useState
 import axios from 'axios';
 import Signup from './components/Signup';
 import Login from './components/Login';
