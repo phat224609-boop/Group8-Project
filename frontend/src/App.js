@@ -1,94 +1,79 @@
 // src/App.js
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react'; // Bật lại useState
 import axios from 'axios';
-import UserList from './components/UserList';
-import Signup from './components/Signup'; // <-- IMPORT MỚI
-import Login from './components/Login';   // <-- IMPORT MỚI
+import Signup from './components/Signup';
+import Login from './components/Login';
+import Profile from './components/Profile';
+import AdminUserList from './components/AdminUserList';
+import ForgotPassword from './components/ForgotPassword';
+import ResetPassword from './components/ResetPassword.jsx';
 import './App.css';
 
-// --- DÙNG IP CỦA PHAT ---
-const API_URL_USERS = 'http://192.168.1.11:3000/users';
-const API_URL_AUTH = 'http://192.168.1.11:3000/api/auth';
+// Định nghĩa 1 lần và dùng chung
+const API_URL = process.env.REACT_APP_API_URL;
 
 function App() {
-  const [users, setUsers] = useState([]);
+  // Dùng State cho role, đọc giá trị ban đầu từ localStorage
+  const [role, setRole] = useState(localStorage.getItem('userRole'));
 
-  // --- LOGIC CŨ (GET, PUT, DELETE) ---
-  const fetchUsers = () => {
-    axios.get(API_URL_USERS)
-      .then(response => {
-        setUsers(response.data.data);
-      })
-      .catch(error => {
-        console.error('Loi khi lay danh sach users!', error);
-      });
+  // Hàm này để Login.jsx gọi lên
+  const handleLoginSuccess = (userRole) => {
+    setRole(userRole); // Cập nhật state ngay lập tức
   };
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
-  const handleDelete = async (id) => {
-    if (window.confirm('Ban co chac chan muon xoa?')) {
-      try {
-        await axios.delete(`${API_URL_USERS}/${id}`);
-        fetchUsers();
-      } catch (error) {
-        console.error('Loi khi xoa user!', error);
-      }
-    }
-  };
-
-  const handleEdit = async (user) => {
-    const newName = prompt('Nhap ten moi cho user:', user.name);
-    if (newName && newName !== user.name) {
-      try {
-        await axios.put(`${API_URL_USERS}/${user._id}`, {
-          name: newName,
-          email: user.email
-        });
-        fetchUsers();
-      } catch (error) {
-        console.error('Loi khi cap nhat user!', error);
-      }
-    }
-  };
-
-  // --- LOGIC MỚI (LOGOUT) ---
   const handleLogout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('userRole'); 
+    setRole(null); // Cập nhật state khi logout
     delete axios.defaults.headers.common['Authorization'];
-    axios.post(`${API_URL_AUTH}/logout`); // Gọi API Logout
+    
+    // Gọi API Logout (nếu cần)
+    if (API_URL) {
+      axios.post(`${API_URL}/api/auth/logout`);
+    }
+    
     alert('Da dang xuat!');
-    window.location.reload();
   };
 
   return (
     <div className="App">
-      <header className="App-header">
+      <header className="App-header" style={{ alignItems: 'center' }}>
         <h1>Du an Group8 - (Frontend React)</h1>
 
-        {/* --- NÚT LOGOUT MỚI --- */}
         <button 
           onClick={handleLogout} 
-          style={{backgroundColor: 'red', color: 'white', position: 'absolute', top: '10px', right: '10px', padding: '5px 10px'}}>
+          style={{backgroundColor: 'red', color: 'white', position: 'absolute', top: '10px', right: '10px', padding: '5px 10px', border: 'none', borderRadius: '3px', cursor: 'pointer'}}>
           Dang Xuat (Logout)
         </button>
 
-        {/* --- FORM MỚI (SIGNUP/LOGIN) --- */}
-        <div style={{display: 'flex', justifyContent: 'space-around', width: '90%', gap: '20px'}}>
+        {/* --- KHU VỰC ĐĂNG NHẬP/KÝ --- */}
+        <div style={{display: 'flex', justifyContent: 'space-around', width: '90%', gap: '20px', flexWrap: 'wrap'}}>
           <Signup />
-          <Login />
+          
+          {/* Truyền hàm mới vào Login.jsx */}
+          <Login onLoginSuccess={handleLoginSuccess} />
         </div>
         
         <hr style={{width: '90%', margin: '20px 0'}}/>
+        
+        {/* --- KHU VỰC QUÊN MẬT KHẨU --- */}
+        <div style={{display: 'flex', justifyContent: 'space-around', width: '90%', gap: '20px', flexWrap: 'wrap'}}>
+          <ForgotPassword />
+          <ResetPassword />
+        </div>
+        
+        <hr style={{width: '90%', margin: '20px 0'}}/>
+        
+        {/* --- KHU VỰC PROFILE (HIỂN THỊ CHO TẤT CẢ) --- */}
+        <Profile />
+        <hr style={{width: '90%', margin: '20px 0'}}/>
 
-        {/* --- KHU VỰC CŨ (QUẢN LÝ USER) --- */}
-        <UserList
-          users={users}
-          handleDelete={handleDelete}
-          handleEdit={handleEdit}
-        />
+        {/* --- KHU VỰC ADMIN --- */}
+        {role === 'admin' ? (
+          <AdminUserList />
+        ) : (
+          <p>Ban la User thuong, khong co quyen xem danh sach users.</p>
+        )}
 
       </header>
     </div>

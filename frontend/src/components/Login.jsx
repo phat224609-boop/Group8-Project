@@ -2,10 +2,10 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-// Dùng IP của Phat
-const API_URL = 'http://192.168.1.11:3000/api/auth/login';
+const API_URL = process.env.REACT_APP_API_URL + '/api/auth/login';
 
-function Login() {
+// NHẬN PROP MỚI: onLoginSuccess
+function Login({ onLoginSuccess }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
@@ -16,24 +16,34 @@ function Login() {
 
     try {
       const response = await axios.post(API_URL, { email, password });
-      
-      // --- LƯU TOKEN ---
       const token = response.data.token;
+      
+      // --- SỬA LỖI CASE SENSITIVE (CHỮ HOA/THƯỜNG) ---
+      const rawRole = response.data.data.role; 
+
+      if (!rawRole) {
+        setMessage('Lỗi: Backend không trả về userRole!');
+        return;
+      }
+      
+      // 2. CHUẨN HÓA VỀ CHỮ THƯỜNG
+      const finalRole = rawRole.toLowerCase(); 
+      
+      // 3. Lưu (đã chuẩn hóa) vào localStorage
       localStorage.setItem('token', token);
+      localStorage.setItem('userRole', finalRole);
       
-      // (Nâng cao) Tự động đính kèm token vào mọi request axios sau này
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      // 4. Báo cho App.js (đã chuẩn hóa)
+      onLoginSuccess(finalRole);
+      // ---------------------------------------------
       
-      setMessage(`Dang nhap thanh cong! Token: ${token}`);
-      
-      // Tùy chọn: Chuyển hướng đến trang chính
-      // window.location.href = '/'; 
+      setMessage(`Dang nhap thanh cong! Role: ${finalRole}`);
       
     } catch (error) {
       if (error.response && (error.response.status === 400 || error.response.status === 404)) {
         setMessage('Email hoac mat khau khong chinh xac!');
       } else {
-        setMessage('Da co loi xay ra, vui long thu lai.');
+        setMessage('Loi ket noi! (Backend co the da sap)');
       }
       console.error('Loi khi dang nhap!', error);
     }
@@ -52,8 +62,7 @@ function Login() {
       </div>
       <button type="submit" style={{ marginTop: '10px' }}>Dang Nhap</button>
       
-      {/* Hiển thị thông báo (bao gồm cả token) */}
-      {message && <p style={{ wordBreak: 'break-all' }}>{message}</p>}
+      {message && <p style={{ color: 'red', wordBreak: 'break-all' }}>{message}</p>}
     </form>
   );
 }
