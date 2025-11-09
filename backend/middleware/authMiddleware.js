@@ -1,8 +1,8 @@
 // backend/middleware/authMiddleware.js
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+const User = require('../models/User'); // Đảm bảo chữ U hoa
 
-// HÀM CŨ: (Kiểm tra xem user đã đăng nhập chưa)
+// HÀM 1: (Kiểm tra xem user đã đăng nhập chưa)
 const protect = async (req, res, next) => {
   let token;
 
@@ -17,7 +17,7 @@ const protect = async (req, res, next) => {
       next();
     } catch (error) {
       console.error(error);
-      res.status(401).json({ message: 'Token không hợp lệ' });
+      res.status(401).json({ message: 'Token không hợp lệ (hoặc hết hạn)' });
     }
   }
 
@@ -26,16 +26,14 @@ const protect = async (req, res, next) => {
   }
 };
 
-// --- HÀM MỚI (HOẠT ĐỘNG 3) ---
-// (Kiểm tra xem user có phải là Admin không)
+// HÀM 2: (Kiểm tra xem user có phải là Admin không)
 const admin = (req, res, next) => {
-  // Hàm này phải chạy SAU hàm 'protect', nên chúng ta đã có req.user
-  if (req.user && req.user.role === 'admin') {
+  // Hàm này chạy SAU 'protect', nên chúng ta đã có req.user
+  if (req.user && req.user.role === 'admin') { // Kiểm tra 'admin' chữ thường
     next(); // Là admin, cho đi tiếp
   } else {
     res.status(403).json({ message: 'Không có quyền Admin' });
   }
 };
-// ---------------------------------
 
 module.exports = { protect, admin }; // Xuất ra cả 2 hàm

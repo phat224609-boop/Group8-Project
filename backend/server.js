@@ -1,7 +1,6 @@
-/* --- File: backend/server.js (Bản sửa lỗi thứ tự) --- */
+/* --- File: backend/server.js (File chính) --- */
 
 // --- 1. ĐỌC FILE .ENV NGAY LẬP TỨC ---
-// (Phải nằm ở dòng đầu tiên)
 const dotenv = require('dotenv');
 dotenv.config();
 
@@ -11,15 +10,32 @@ const cors = require('cors');
 const mongoose = require('mongoose'); 
 
 // --- 3. IMPORT CÁC ROUTE ---
-// (Các file này bây giờ đã có thể đọc process.env)
 const userRoutes = require('./routes/user.js');
 const authRoutes = require('./routes/auth.js');
 const profileRoutes = require('./routes/profile.js');
 
 // --- 4. CẤU HÌNH APP ---
 const app = express();
-app.use(cors());
-app.use(express.json());
+
+// Cấu hình CORS (cho phép Vercel và localhost)
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://localhost:3001',
+  'https://group8-project.vercel.app' // Thay bằng link Vercel của bạn
+];
+
+app.use(cors({
+  origin: function(origin, callback){
+    if(!origin) return callback(null, true);
+    if(allowedOrigins.indexOf(origin) === -1){
+      const msg = 'CORS policy does not allow access from this origin.';
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  }
+}));
+
+app.use(express.json()); // Để đọc JSON
 
 const PORT = process.env.PORT || 3000;
 
