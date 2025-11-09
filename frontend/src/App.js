@@ -6,7 +6,7 @@ import Login from './components/Login';
 import Profile from './components/Profile';
 import AdminUserList from './components/AdminUserList';
 import ForgotPassword from './components/ForgotPassword';
-import ResetPassword from './components/ResetPassword.jsx';
+import ResetPassword from './components/ResetPassword';
 import './App.css';
 
 // Định nghĩa 1 lần và dùng chung
