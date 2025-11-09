@@ -2,8 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-// Dùng IP của Phat
-const API_URL_USERS = 'http://192.168.1.11:3000/users';
+const API_URL_USERS = process.env.REACT_APP_API_URL + '/users';
 
 function AdminUserList() {
   const [users, setUsers] = useState([]);
@@ -13,7 +12,6 @@ function AdminUserList() {
   const fetchAllUsers = async () => {
     setMessage('');
     try {
-      // Lấy token để xác thực
       const token = localStorage.getItem('token');
       const config = {
         headers: {
@@ -30,12 +28,11 @@ function AdminUserList() {
     }
   };
 
-  // Tự động gọi khi component được tải
   useEffect(() => {
     fetchAllUsers();
   }, []);
 
-  // Hàm Xóa (chỉ Admin mới gọi được)
+  // Hàm Xóa
   const handleDeleteUser = async (id) => {
     if (window.confirm('Ban co chac chan muon xoa USER nay?')) {
       try {
@@ -45,12 +42,8 @@ function AdminUserList() {
             Authorization: `Bearer ${token}`,
           },
         };
-
         await axios.delete(`${API_URL_USERS}/${id}`, config);
-        
-        // Tải lại danh sách sau khi xóa
-        fetchAllUsers();
-
+        fetchAllUsers(); // Tải lại danh sách
       } catch (error) {
         console.error('Loi khi xoa user!', error);
         setMessage('Lỗi khi xóa user.');
@@ -59,13 +52,12 @@ function AdminUserList() {
   };
 
   return (
-  // ---- CSS THAY ĐỔI Ở ĐÂY ----
     <div style={{ 
       border: '2px solid red', 
       padding: '15px', 
       borderRadius: '5px', 
       marginTop: '20px', 
-      width: '90%' // Thêm width để căn giữa
+      width: '90%'
     }}>
       <h2>Trang Admin: Quan Ly Users</h2>
       {message && <p style={{ color: 'red' }}>{message}</p>}
@@ -75,16 +67,15 @@ function AdminUserList() {
           <p>Khong co user nao...</p>
         ) : (
           users.map(user => (
-            // ---- CSS THAY ĐỔI Ở ĐÂY ----
             <li key={user._id} style={{ 
-              margin: '10px 0', // Sửa margin
-              backgroundColor: '#555', // Đổi nền thành xám sáng hơn
-              color: 'white', // Đổi chữ thành màu trắng
-              padding: '10px', // Tăng padding
-              borderRadius: '5px', // Bo góc
-              display: 'flex', // Dùng flexbox
-              justifyContent: 'space-between', // Đẩy nút Xóa sang phải
-              alignItems: 'center' // Căn giữa
+              margin: '10px 0', 
+              backgroundColor: '#555', // Nền xám sáng
+              color: 'white', // Chữ trắng
+              padding: '10px', 
+              borderRadius: '5px',
+              display: 'flex', 
+              justifyContent: 'space-between',
+              alignItems: 'center'
             }}>
               {/* Thông tin user (bên trái) */}
               <div>
@@ -113,7 +104,5 @@ function AdminUserList() {
     </div>
   );
 }
-
-
 
 export default AdminUserList;

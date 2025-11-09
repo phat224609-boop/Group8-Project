@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 
 // Dùng IP của Phat (Đảm bảo IP này đúng)
-const API_URL = 'http://192.168.1.11:3000/api/auth/login'; 
+const API_URL = process.env.REACT_APP_API_URL + '/api/auth/login';
 
 // NHẬN PROP MỚI: onLoginSuccess
 function Login({ onLoginSuccess }) {

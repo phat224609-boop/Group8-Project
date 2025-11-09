@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-const API_URL = 'http://192.168.1.11:3000/api/auth/forgot-password';
+const API_URL = process.env.REACT_APP_API_URL + '/api/auth/forgot-password';
 
 function ForgotPassword() {
   const [email, setEmail] = useState('');

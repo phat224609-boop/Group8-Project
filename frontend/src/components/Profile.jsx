@@ -2,14 +2,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-// Dùng IP của Phat
-const API_URL_PROFILE = 'http://192.168.1.11:3000/api/profile';
-const API_URL_AVATAR = 'http://192.168.1.11:3000/api/profile/upload-avatar';
+const API_URL_PROFILE = process.env.REACT_APP_API_URL + '/api/profile';
+const API_URL_AVATAR = process.env.REACT_APP_API_URL + '/api/profile/upload-avatar';
 
 function Profile() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const [avatar, setAvatar] = useState(''); // <-- State để lưu link avatar
+  const [avatar, setAvatar] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
 
@@ -27,7 +26,7 @@ function Profile() {
         
         setName(response.data.name);
         setEmail(response.data.email);
-        setAvatar(response.data.avatar); // <-- PHẢI CÓ DÒNG NÀY
+        setAvatar(response.data.avatar); 
         
       } catch (error) {
         console.error('Loi khi lay profile!', error);
@@ -39,7 +38,7 @@ function Profile() {
     };
 
     fetchProfile();
-  }, []); // [] nghĩa là chỉ chạy 1 lần lúc tải trang
+  }, []);
 
   // 2. Hàm Cập nhật Profile (Tên, Email)
   const handleSubmit = async (e) => {
@@ -47,7 +46,6 @@ function Profile() {
     setMessage('');
     setError('');
 
-    // Validation (Hoạt động 2)
     if (!name.trim()) {
       setError('Ten không được để trống');
       return;
@@ -81,7 +79,7 @@ function Profile() {
     if (!file) return;
 
     const formData = new FormData();
-    formData.append('avatar', file); // 'avatar' phải khớp tên 'upload.single('avatar')'
+    formData.append('avatar', file);
 
     try {
       const token = localStorage.getItem('token');
@@ -91,9 +89,10 @@ function Profile() {
           Authorization: `Bearer ${token}`,
         },
       };
+
       const response = await axios.put(API_URL_AVATAR, formData, config);
 
-      setAvatar(response.data.data.avatar); // <-- CẬP NHẬT STATE AVATAR
+      setAvatar(response.data.data.avatar);
       setMessage('Cap nhat avatar thanh cong!');
       setError('');
 
@@ -108,8 +107,6 @@ function Profile() {
     <div style={{ border: '1px solid gray', padding: '15px', borderRadius: '5px', marginTop: '20px', width: '90%' }}>
       <h3>Trang Thông Tin Cá Nhân (Profile)</h3>
       
-      {/* --- HIỂN THỊ AVATAR --- */}
-      {/* Kiểm tra nếu 'avatar' có tồn tại thì mới hiển thị */}
       {avatar && (
         <img 
           src={avatar} 
@@ -118,7 +115,6 @@ function Profile() {
         />
       )}
       
-      {/* --- FORM UPLOAD AVATAR --- */}
       <div style={{ margin: '10px 0' }}>
         <label>Đổi Avatar:</label>
         <input 
@@ -130,7 +126,6 @@ function Profile() {
       
       <hr style={{margin: '15px 0'}}/>
 
-      {/* --- FORM CẬP NHẬT (TÊN, EMAIL) --- */}
       <form onSubmit={handleSubmit}>
         <div>
           <label>Ten: </label>

@@ -9,7 +9,7 @@ import ForgotPassword from './components/ForgotPassword';
 import ResetPassword from './components/ResetPassword';
 import './App.css';
 
-const API_URL_AUTH = 'http://192.168.1.11:3000/api/auth';
+const API_URL = process.env.REACT_APP_API_URL;
 
 function App() {
 
