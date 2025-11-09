@@ -6,10 +6,7 @@ const authController = require('../controllers/authController');
 router.post('/signup', authController.signup);
 router.post('/login', authController.login);
 router.post('/logout', authController.logout);
-
-// --- HOẠT ĐỘNG MỚI ---
 router.post('/forgot-password', authController.forgotPassword);
-router.put('/reset-password/:token', authController.resetPassword); // Dùng PUT
-// --------------------
+router.put('/reset-password/:token', authController.resetPassword);
 
 module.exports = router;
