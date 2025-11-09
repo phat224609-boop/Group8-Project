@@ -21,7 +21,8 @@ const app = express();
 const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:3001',
-  'https://group8-project.vercel.app' // Thay bằng link Vercel của bạn
+  // --- THÊM DÒNG NÀY ---
+  'https://group8-project-xncw-eptadzsbl-phats-projects-747e9e19.vercel.app'
 ];
 
 app.use(cors({
